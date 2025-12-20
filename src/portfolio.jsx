@@ -26,7 +26,7 @@ const Portfolio = () => {
 // ========================================
   // CUSTOMIZATION SECTION - EDIT THIS PART
   // ========================================
-  
+
   const personalInfo = {
     name: "Putera Nami Shiddieqy",
     title: "Tech Enthusiast | Software Engineer | Web Development",
@@ -192,8 +192,8 @@ const Portfolio = () => {
 
         .portfolio {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background-color: #0f172a;
-          color: #ffffff;
+          background-color: #ffffff;
+          color: #1f2937;
           line-height: 1.6;
         }
 
@@ -202,11 +202,12 @@ const Portfolio = () => {
           position: fixed;
           top: 0;
           width: 100%;
-          background-color: rgba(15, 23, 42, 0.95);
+          background-color: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(10px);
           z-index: 1000;
-          border-bottom: 1px solid #334155;
+          border-bottom: 1px solid #e5e7eb;
           padding: 1rem 0;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .nav-container {
@@ -221,7 +222,7 @@ const Portfolio = () => {
         .logo {
           font-size: 1.5rem;
           font-weight: bold;
-          background: linear-gradient(135deg, #60a5fa, #a855f7);
+          background: linear-gradient(135deg, #2563eb, #3b82f6);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -235,7 +236,7 @@ const Portfolio = () => {
         .nav-button {
           background: none;
           border: none;
-          color: #94a3b8;
+          color: #6b7280;
           cursor: pointer;
           font-size: 1rem;
           transition: color 0.2s;
@@ -243,18 +244,19 @@ const Portfolio = () => {
         }
 
         .nav-button:hover {
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         .nav-button.active {
-          color: #60a5fa;
+          color: #2563eb;
+          font-weight: 600;
         }
 
         .mobile-menu-toggle {
           display: none;
           background: none;
           border: none;
-          color: #ffffff;
+          color: #1f2937;
           cursor: pointer;
           padding: 0.5rem;
         }
@@ -262,6 +264,7 @@ const Portfolio = () => {
         .mobile-menu {
           display: none;
           padding: 1rem 1.5rem;
+          background-color: #ffffff;
         }
 
         .mobile-menu.open {
@@ -275,14 +278,14 @@ const Portfolio = () => {
           padding: 0.75rem 0;
           background: none;
           border: none;
-          color: #94a3b8;
+          color: #6b7280;
           cursor: pointer;
           font-size: 1rem;
           transition: color 0.2s;
         }
 
         .mobile-menu-button:hover {
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         /* Sections */
@@ -294,7 +297,7 @@ const Portfolio = () => {
         }
 
         .section-alt {
-          background-color: #1e293b;
+          background-color: #f9fafb;
         }
 
         .container {
@@ -309,12 +312,13 @@ const Portfolio = () => {
           text-align: center;
           position: relative;
           overflow: hidden;
+          background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
         }
 
         .hero-background {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1));
+          background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
           z-index: 0;
         }
 
@@ -335,7 +339,7 @@ const Portfolio = () => {
           font-size: 4rem;
           font-weight: bold;
           margin-bottom: 1.5rem;
-          background: linear-gradient(135deg, #60a5fa, #a855f7, #ec4899);
+          background: linear-gradient(135deg, #1e40af, #2563eb, #3b82f6);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -344,13 +348,13 @@ const Portfolio = () => {
         .hero-subtitle {
           font-size: 1.5rem;
           margin-bottom: 2rem;
-          color: #cbd5e1;
+          color: #4b5563;
         }
 
         .hero-description {
           font-size: 1.1rem;
           margin-bottom: 3rem;
-          color: #94a3b8;
+          color: #6b7280;
           max-width: 600px;
           margin-left: auto;
           margin-right: auto;
@@ -379,21 +383,23 @@ const Portfolio = () => {
         .button-primary {
           background-color: #2563eb;
           color: white;
+          box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
         }
 
         .button-primary:hover {
           background-color: #1d4ed8;
           transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
         }
 
         .button-secondary {
           background-color: transparent;
-          color: white;
-          border: 2px solid #475569;
+          color: #2563eb;
+          border: 2px solid #2563eb;
         }
 
         .button-secondary:hover {
-          border-color: #60a5fa;
+          background-color: #eff6ff;
           transform: translateY(-2px);
         }
 
@@ -403,7 +409,7 @@ const Portfolio = () => {
           font-weight: bold;
           text-align: center;
           margin-bottom: 3rem;
-          background: linear-gradient(135deg, #60a5fa, #a855f7);
+          background: linear-gradient(135deg, #1e40af, #3b82f6);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -427,13 +433,15 @@ const Portfolio = () => {
         }
 
         .about-text {
-          background-color: #374151;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 2rem;
           margin-bottom: 2rem;
           font-size: 1.1rem;
-          color: #d1d5db;
+          color: #4b5563;
           line-height: 1.7;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .about-text p {
@@ -452,20 +460,28 @@ const Portfolio = () => {
         }
 
         .about-card {
-          background-color: #374151;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 1.5rem;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          transition: all 0.3s;
+        }
+
+        .about-card:hover {
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+          border-color: #3b82f6;
         }
 
         .about-card-title {
           font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 1rem;
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         .about-card p {
-          color: #d1d5db;
+          color: #4b5563;
           margin: 0;
         }
 
@@ -477,26 +493,29 @@ const Portfolio = () => {
         }
 
         .project-card {
-          background-color: #1e293b;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 1.5rem;
           transition: all 0.3s;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .project-card:hover {
-          background-color: #334155;
+          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
           transform: translateY(-5px);
+          border-color: #3b82f6;
         }
 
         .project-title {
           font-size: 1.25rem;
           font-weight: 600;
           margin-bottom: 1rem;
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         .project-description {
-          color: #d1d5db;
+          color: #4b5563;
           margin-bottom: 1rem;
           line-height: 1.6;
         }
@@ -508,7 +527,7 @@ const Portfolio = () => {
         .project-highlight-title {
           font-weight: 600;
           margin-bottom: 0.5rem;
-          color: #e2e8f0;
+          color: #1f2937;
         }
 
         .project-highlight-list {
@@ -522,13 +541,13 @@ const Portfolio = () => {
           align-items: flex-start;
           margin-bottom: 0.5rem;
           font-size: 0.9rem;
-          color: #94a3b8;
+          color: #6b7280;
         }
 
         .project-highlight-dot {
           width: 6px;
           height: 6px;
-          background-color: #60a5fa;
+          background-color: #3b82f6;
           border-radius: 50%;
           margin-right: 0.5rem;
           margin-top: 0.5rem;
@@ -542,7 +561,7 @@ const Portfolio = () => {
         .project-tech-title {
           font-weight: 600;
           margin-bottom: 0.5rem;
-          color: #e2e8f0;
+          color: #1f2937;
         }
 
         .project-tech-list {
@@ -553,23 +572,25 @@ const Portfolio = () => {
 
         .project-tech-tag {
           padding: 0.25rem 0.75rem;
-          background-color: #2563eb;
-          color: white;
+          background-color: #eff6ff;
+          color: #1e40af;
           font-size: 0.875rem;
           border-radius: 9999px;
+          border: 1px solid #bfdbfe;
         }
 
         .project-link {
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
-          color: #60a5fa;
+          color: #2563eb;
           text-decoration: none;
           transition: color 0.2s;
+          font-weight: 500;
         }
 
         .project-link:hover {
-          color: #93c5fd;
+          color: #1d4ed8;
         }
 
         /* Skills section */
@@ -580,20 +601,23 @@ const Portfolio = () => {
         }
 
         .skill-card {
-          background-color: #374151;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 1.5rem;
           text-align: center;
           transition: all 0.3s;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .skill-card:hover {
-          background-color: #4b5563;
+          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
           transform: translateY(-5px);
+          border-color: #3b82f6;
         }
 
         .skill-icon {
-          color: #60a5fa;
+          color: #3b82f6;
           margin-bottom: 1rem;
           display: flex;
           justify-content: center;
@@ -603,7 +627,7 @@ const Portfolio = () => {
           font-size: 1.1rem;
           font-weight: 600;
           margin-bottom: 1rem;
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         .skill-list {
@@ -613,7 +637,7 @@ const Portfolio = () => {
         }
 
         .skill-item {
-          color: #d1d5db;
+          color: #4b5563;
           margin-bottom: 0.5rem;
         }
 
@@ -625,15 +649,18 @@ const Portfolio = () => {
         }
 
         .cert-card {
-          background-color: #1e293b;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 1.5rem;
           transition: all 0.3s;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .cert-card:hover {
-          background-color: #334155;
+          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
           transform: translateY(-5px);
+          border-color: #3b82f6;
         }
 
         .cert-header {
@@ -643,24 +670,24 @@ const Portfolio = () => {
         }
 
         .cert-icon {
-          color: #fbbf24;
+          color: #f59e0b;
           margin-right: 0.75rem;
         }
 
         .cert-title {
           font-size: 1.1rem;
           font-weight: 600;
-          color: #60a5fa;
+          color: #2563eb;
         }
 
         .cert-detail {
-          color: #d1d5db;
+          color: #4b5563;
           margin-bottom: 0.5rem;
         }
 
         .cert-achievement {
           font-size: 0.9rem;
-          color: #94a3b8;
+          color: #6b7280;
         }
 
         /* Contact section */
@@ -670,14 +697,16 @@ const Portfolio = () => {
         }
 
         .contact-card {
-          background-color: #374151;
+          background-color: #ffffff;
           border-radius: 0.5rem;
           padding: 2rem;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .contact-description {
           font-size: 1.1rem;
-          color: #d1d5db;
+          color: #4b5563;
           margin-bottom: 2rem;
           text-align: center;
         }
@@ -703,6 +732,7 @@ const Portfolio = () => {
 
         .contact-link:hover {
           transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .contact-email {
@@ -714,28 +744,28 @@ const Portfolio = () => {
         }
 
         .contact-phone {
-          background-color: #059669;
+          background-color: #10b981;
         }
 
         .contact-phone:hover {
-          background-color: #047857;
+          background-color: #059669;
         }
 
         .contact-github {
-          background-color: #4b5563;
+          background-color: #6b7280;
         }
 
         .contact-github:hover {
-          background-color: #374151;
+          background-color: #4b5563;
         }
 
         /* Footer */
         footer {
           padding: 2rem 0;
-          background-color: #0f172a;
-          border-top: 1px solid #334155;
+          background-color: #f9fafb;
+          border-top: 1px solid #e5e7eb;
           text-align: center;
-          color: #94a3b8;
+          color: #6b7280;
         }
 
         /* Responsive Design */
