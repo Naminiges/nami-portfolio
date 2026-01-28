@@ -981,7 +981,6 @@ const Portfolio = () => {
                   >
                     <GithubIcon size={16} />
                     <span>View Code</span>
-                    <ExternalLink size={16} />
                   </a>
 
                   {project.preview && (
