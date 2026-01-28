@@ -58,7 +58,6 @@ const Portfolio = () => {
       description: 'Media pembelajaran dan platform freelancer berlandaskan SDGs Decent Work and Economic Growth.',
       technologies: ['Laravel', 'Web Development'], 
       github: 'https://github.com/Naminiges',
-      preview: 'https://link-to-demo-or-video',
       highlights: [
         'Project Leader dalam pengembangan sistem.', 
         'Memenangkan Juara 3 pada kompetisi Coderush 2025.', 
@@ -70,7 +69,6 @@ const Portfolio = () => {
       description: 'Sistem pakar untuk mengukur tingkat risiko kesehatan mental remaja berdasarkan pola aktivitas digital.', 
       technologies: ['Fullstack Developer', 'Forward Chaining'], 
       github: 'https://github.com/Naminiges',
-      preview: 'https://link-to-demo-or-video',
       highlights: [
         'Menggunakan metode inferensi maju (forward chaining).', 
         'Bertanggung jawab sebagai Fullstack Developer.', 
@@ -82,7 +80,6 @@ const Portfolio = () => {
       description: 'Website penggalangan dana untuk menanggulangi emisi karbon di Kota Medan (SDGs Climate Action).', 
       technologies: ['Web Development', 'SDGs Points'], 
       github: 'https://github.com/Naminiges',
-      preview: 'https://link-to-demo-or-video',
       highlights: [
         'Project Leader untuk kompetisi DSC Solve 2024.', 
         'Berhasil meraih posisi Top 10 Developer Student Club Solve 2024.', 
@@ -982,18 +979,6 @@ const Portfolio = () => {
                     <GithubIcon size={16} />
                     <span>View Code</span>
                   </a>
-
-                  {project.preview && (
-                    <a
-                      href={project.preview}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link"
-                    >
-                      <ExternalLink size={16} />
-                      <span>Preview</span>
-                    </a>
-                  )}
                 </div>
               </div>
             ))}
