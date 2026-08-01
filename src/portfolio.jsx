@@ -1,1096 +1,644 @@
-import React, { useState, useEffect } from 'react';
-import { Mail, Phone, ExternalLink, Award, Code, Shield, Database, User, Menu, X, ChevronRight } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Activity,
+  ArrowDown,
+  ArrowUpRight,
+  Award,
+  Boxes,
+  BrainCircuit,
+  BriefcaseBusiness,
+  ChartNoAxesCombined,
+  Check,
+  ChevronRight,
+  Code2,
+  Copy,
+  Database,
+  ExternalLink,
+  GraduationCap,
+  HeartHandshake,
+  Layers3,
+  Leaf,
+  Linkedin,
+  Mail,
+  Map,
+  MapPin,
+  Menu,
+  MessageCircleMore,
+  Moon,
+  ScanSearch,
+  Sparkles,
+  Sun,
+  X,
+} from 'lucide-react';
+import {
+  additionalCredentials,
+  achievements,
+  archiveProjects,
+  capabilities,
+  codenami,
+  education,
+  experiences,
+  languages,
+  personal,
+  projectFilters,
+  projects,
+  stats,
+} from './data/portfolioData';
 
-// Custom GitHub icon component (since Github is deprecated in lucide-react)
-const GithubIcon = ({ size = 24 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-    <path d="M9 18c-4.51 2-5-2-7-2" />
-  </svg>
-);
+const iconMap = {
+  activity: Activity,
+  boxes: Boxes,
+  brain: BrainCircuit,
+  chart: ChartNoAxesCombined,
+  database: Database,
+  heart: HeartHandshake,
+  layers: Layers3,
+  leaf: Leaf,
+  map: Map,
+  messages: MessageCircleMore,
+  scan: ScanSearch,
+  sparkles: Sparkles,
+};
 
-const Portfolio = () => {
+const navItems = [
+  { id: 'about', label: 'Tentang' },
+  { id: 'codenami', label: 'CodeNami' },
+  { id: 'projects', label: 'Karya' },
+  { id: 'expertise', label: 'Keahlian' },
+  { id: 'journey', label: 'Perjalanan' },
+  { id: 'contact', label: 'Kontak' },
+];
+
+function GithubIcon({ size = 20 }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.78 1.2 1.78 1.2 1.04 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.74-1.55-2.58-.3-5.29-1.29-5.29-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.98 10.98 0 0 1 5.75 0c2.19-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.72 5.39-5.3 5.68.42.36.79 1.07.79 2.16v3.03c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z" />
+    </svg>
+  );
+}
+
+function SectionHeading({ label, title, description }) {
+  return (
+    <div className="section-heading" data-reveal>
+      <p className="section-kicker">
+        <span>{label}</span>
+      </p>
+      <h2>{title}</h2>
+      {description && <p className="section-description">{description}</p>}
+    </div>
+  );
+}
+
+function Portfolio() {
   const [activeSection, setActiveSection] = useState('home');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState({});
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [projectFilter, setProjectFilter] = useState('Semua');
+  const [copied, setCopied] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = window.localStorage.getItem('portfolio-theme');
+    if (savedTheme) return savedTheme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
 
-// ========================================
-  // CUSTOMIZATION SECTION - EDIT THIS PART
-  // ========================================
-
-  const personalInfo = {
-    name: "Putera Nami Shiddieqy",
-    title: "Tech Enthusiast | Software Engineer | Web Development",
-    description: "Mahasiswa S1 Teknologi Informasi yang antusias dalam bidang Software Development dan Kecerdasan Buatan, dengan keahlian menengah di Laravel, C/C++, dan Python.",
-    github: "https://github.com/Naminiges", 
-    email: "puteranami1150@gmail.com", 
-    phone: "+6285361405700" 
-  };
-
-  const aboutMe = {
-    intro: "Saya merupakan mahasiswa S1 Teknologi Informasi di Universitas Sumatera Utara yang telah mendalami bidang IT dan pengembangan website sejak tahun 2023.", 
-    experience: "Memiliki pengalaman sebagai Intern di PT Elrei Dasera Nusantara dalam mengoptimalkan sistem ranking, serta aktif sebagai Asisten Laboratorium yang mengajar Pemrograman Web Lanjutan menggunakan Laravel.", 
-    goals: "Fokus pada pengembangan solusi teknologi yang berdampak sosial, terbukti dari kepemimpinan dalam berbagai proyek berbasis SDGs dan kesuksesan menginisiasi kompetisi teknologi nasional.", 
-    education: {
-      institution: "Universitas Sumatera Utara", 
-      program: "S1 Teknologi Informasi", 
-      focus: "Teknologi Informasi (IPK: 3,98)" 
-    },
-    careerGoals: {
-      title: "Software Developer / AI Researcher", 
-      certification: "Alibaba Certified Developer", 
-      vision: "Mengembangkan inovasi cerdas berbasis AI dan Web untuk mendukung keberlanjutan global (SDGs)." 
-    }
-  };
-
-  const projects = [
-    {
-      title: 'Langkah Kerja', 
-      description: 'Media pembelajaran dan platform freelancer berlandaskan SDGs Decent Work and Economic Growth.',
-      technologies: ['Laravel', 'Web Development'], 
-      github: 'https://github.com/Naminiges',
-      highlights: [
-        'Project Leader dalam pengembangan sistem.', 
-        'Memenangkan Juara 3 pada kompetisi Coderush 2025.', 
-        'Luaran berupa website fungsional untuk kompetisi Solution Competition.', 
-      ]
-    },
-    {
-      title: 'Sistem Pakar Penilaian Risiko Kesehatan Mental', 
-      description: 'Sistem pakar untuk mengukur tingkat risiko kesehatan mental remaja berdasarkan pola aktivitas digital.', 
-      technologies: ['Fullstack Developer', 'Forward Chaining'], 
-      github: 'https://github.com/Naminiges',
-      highlights: [
-        'Menggunakan metode inferensi maju (forward chaining).', 
-        'Bertanggung jawab sebagai Fullstack Developer.', 
-        'Dikembangkan pada Mei 2025.', 
-      ]
-    },
-    {
-      title: 'EMISEE', 
-      description: 'Website penggalangan dana untuk menanggulangi emisi karbon di Kota Medan (SDGs Climate Action).', 
-      technologies: ['Web Development', 'SDGs Points'], 
-      github: 'https://github.com/Naminiges',
-      highlights: [
-        'Project Leader untuk kompetisi DSC Solve 2024.', 
-        'Berhasil meraih posisi Top 10 Developer Student Club Solve 2024.', 
-        'Implementasi solusi untuk poin 13 Climate Action.', 
-      ]
-    }
-  ];
-
-  const skills = [
-    { 
-      category: 'Bahasa Pemrograman', 
-      items: ['Python', 'C/C++', 'PHP', 'Javascript'],
-      icon: Code 
-    },
-    { 
-      category: 'Framework & Tools', 
-      items: ['Laravel', 'React JS', 'Git', 'Github'], 
-      icon: Database 
-    },
-    { 
-      category: 'Soft Skill', 
-      items: ['Kepemimpinan', 'Manajemen Waktu', 'Komunikasi', 'Pemecahan Masalah'], 
-      icon: User 
-    },
-    { 
-      category: 'Lainnya', 
-      items: ['Meneliti', 'Microsoft Office', 'Networking & Security'], 
-      icon: Shield 
-    }
-  ];
-
-  const certifications = [
-    {
-      title: 'Python IT Specialist', 
-      institution: 'Pearson', 
-      date: '2025', 
-      achievement: 'Sertifikat Kompetensi Kelulusan IT Specialist.', 
-      preview: 'https://www.certiport.com/portal/Pages/PrintTranscriptInfo.aspx?action=Cert&id=471&cvid=V6gqXxhh8klqfLCdWot2Jg==' 
-    },
-    {
-      title: 'Alibaba Certified Developer', 
-      institution: 'Alibaba Cloud', 
-      date: '2024', 
-      achievement: 'Sertifikat mengembangkan aplikasi dengan Alibaba Cloud Services.', 
-      preview: 'ACCD0119700100008890' 
-    },
-    {
-      title: 'Juara 3 Coderush 2025', 
-      institution: 'GDGOC USU & ITLG USU', 
-      date: 'Februari 2025', 
-      achievement: 'Pemenang dalam Solution Competition dengan produk LangkahKerja.', 
-      preview: 'https://link-to-certificate-or-proof'
-    }
-  ];
-
-  // ========================================
-  // END OF CUSTOMIZATION SECTION
-  // ========================================
+  const filteredProjects = useMemo(
+    () =>
+      projectFilter === 'Semua'
+        ? projects
+        : projects.filter((project) => project.category === projectFilter),
+    [projectFilter],
+  );
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsVisible(prev => ({
-            ...prev,
-            [entry.target.id]: entry.isIntersecting
-          }));
-        });
-      },
-      { threshold: 0.3 }
-    );
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('portfolio-theme', theme);
+  }, [theme]);
 
-    document.querySelectorAll('section[id]').forEach((section) => {
-      observer.observe(section);
-    });
+  useEffect(() => {
+    const sectionId = window.location.hash.slice(1);
+    if (!sectionId) return;
 
-    return () => observer.disconnect();
+    const scrollTimer = window.setTimeout(() => {
+      const target = document.getElementById(sectionId);
+      if (!target) return;
+
+      const top = target.getBoundingClientRect().top + window.scrollY - 76;
+      window.scrollTo({ top, behavior: 'instant' });
+    }, 100);
+
+    return () => window.clearTimeout(scrollTimer);
   }, []);
 
-  const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-    setActiveSection(sectionId);
-    setIsMenuOpen(false);
+  useEffect(() => {
+    document.body.classList.toggle('menu-open', menuOpen);
+    return () => document.body.classList.remove('menu-open');
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-35% 0px -55%', threshold: 0 },
+    );
+
+    document.querySelectorAll('main section[id]').forEach((section) => {
+      sectionObserver.observe(section);
+    });
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+
+    document.querySelectorAll('[data-reveal]').forEach((element) => {
+      revealObserver.observe(element);
+    });
+
+    return () => {
+      sectionObserver.disconnect();
+      revealObserver.disconnect();
+    };
+  }, [filteredProjects]);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMenuOpen(false);
   };
 
-  const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'skills', label: 'Skills' },
-    { id: 'certifications', label: 'Certifications' },
-    { id: 'contact', label: 'Contact' }
-  ];
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(personal.email);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.location.href = `mailto:${personal.email}`;
+    }
+  };
 
   return (
-    <div className="portfolio">
-      <style>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        html {
-          scroll-behavior: smooth;
-        }
-
-        .portfolio {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background-color: #ffffff;
-          color: #1f2937;
-          line-height: 1.6;
-        }
-
-        /* Navigation */
-        nav {
-          position: fixed;
-          top: 0;
-          width: 100%;
-          background-color: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          z-index: 1000;
-          border-bottom: 1px solid #e5e7eb;
-          padding: 1rem 0;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1.5rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .logo {
-          font-size: 1.5rem;
-          font-weight: bold;
-          background: linear-gradient(135deg, #2563eb, #3b82f6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .nav-desktop {
-          display: flex;
-          gap: 2rem;
-        }
-
-        .nav-button {
-          background: none;
-          border: none;
-          color: #6b7280;
-          cursor: pointer;
-          font-size: 1rem;
-          transition: color 0.2s;
-          padding: 0.5rem;
-        }
-
-        .nav-button:hover {
-          color: #2563eb;
-        }
-
-        .nav-button.active {
-          color: #2563eb;
-          font-weight: 600;
-        }
-
-        .mobile-menu-toggle {
-          display: none;
-          background: none;
-          border: none;
-          color: #1f2937;
-          cursor: pointer;
-          padding: 0.5rem;
-        }
-
-        .mobile-menu {
-          display: none;
-          padding: 1rem 1.5rem;
-          background-color: #ffffff;
-        }
-
-        .mobile-menu.open {
-          display: block;
-        }
-
-        .mobile-menu-button {
-          display: block;
-          width: 100%;
-          text-align: left;
-          padding: 0.75rem 0;
-          background: none;
-          border: none;
-          color: #6b7280;
-          cursor: pointer;
-          font-size: 1rem;
-          transition: color 0.2s;
-        }
-
-        .mobile-menu-button:hover {
-          color: #2563eb;
-        }
-
-        /* Sections */
-        section {
-          padding: 5rem 0;
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-        }
-
-        .section-alt {
-          background-color: #f9fafb;
-        }
-
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1.5rem;
-          width: 100%;
-        }
-
-        /* Hero Section */
-        .hero {
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-          background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
-        }
-
-        .hero-background {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
-          z-index: 0;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 1;
-          transition: all 1s;
-          transform: translateY(40px);
-          opacity: 0;
-        }
-
-        .hero-content.fade-in {
-          transform: translateY(0);
-          opacity: 1;
-        }
-
-        .hero-title {
-          font-size: 4rem;
-          font-weight: bold;
-          margin-bottom: 1.5rem;
-          background: linear-gradient(135deg, #1e40af, #2563eb, #3b82f6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .hero-subtitle {
-          font-size: 1.5rem;
-          margin-bottom: 2rem;
-          color: #4b5563;
-        }
-
-        .hero-description {
-          font-size: 1.1rem;
-          margin-bottom: 3rem;
-          color: #6b7280;
-          max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .hero-buttons {
-          display: flex;
-          justify-content: center;
-          gap: 1.5rem;
-          flex-wrap: wrap;
-        }
-
-        .button-primary, .button-secondary {
-          padding: 0.75rem 2rem;
-          border-radius: 0.5rem;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          border: none;
-        }
-
-        .button-primary {
-          background-color: #2563eb;
-          color: white;
-          box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-        }
-
-        .button-primary:hover {
-          background-color: #1d4ed8;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .button-secondary {
-          background-color: transparent;
-          color: #2563eb;
-          border: 2px solid #2563eb;
-        }
-
-        .button-secondary:hover {
-          background-color: #eff6ff;
-          transform: translateY(-2px);
-        }
-
-        /* Content sections */
-        .section-title {
-          font-size: 2.5rem;
-          font-weight: bold;
-          text-align: center;
-          margin-bottom: 3rem;
-          background: linear-gradient(135deg, #1e40af, #3b82f6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .fade-in-section {
-          transition: all 1s;
-          opacity: 0;
-          transform: translateY(40px);
-        }
-
-        .fade-in-section.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        /* About section */
-        .about-content {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .about-text {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 2rem;
-          margin-bottom: 2rem;
-          font-size: 1.1rem;
-          color: #4b5563;
-          line-height: 1.7;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .about-text p {
-          margin-bottom: 1.5rem;
-        }
-
-        .about-text p:last-child {
-          margin-bottom: 0;
-        }
-
-        .about-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
-          margin-top: 2rem;
-        }
-
-        .about-card {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-          transition: all 0.3s;
-        }
-
-        .about-card:hover {
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-          border-color: #3b82f6;
-        }
-
-        .about-card-title {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #2563eb;
-        }
-
-        .about-card p {
-          color: #4b5563;
-          margin: 0;
-        }
-
-        /* Projects section */
-        .projects-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 2rem;
-        }
-
-        .project-card {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          transition: all 0.3s;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .project-card:hover {
-          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
-          transform: translateY(-5px);
-          border-color: #3b82f6;
-        }
-
-        .project-title {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #2563eb;
-        }
-
-        .project-description {
-          color: #4b5563;
-          margin-bottom: 1rem;
-          line-height: 1.6;
-        }
-
-        .project-highlights {
-          margin-bottom: 1rem;
-        }
-
-        .project-highlight-title {
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #1f2937;
-        }
-
-        .project-highlight-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .project-highlight-item {
-          display: flex;
-          align-items: flex-start;
-          margin-bottom: 0.5rem;
-          font-size: 0.9rem;
-          color: #6b7280;
-        }
-
-        .project-highlight-dot {
-          width: 6px;
-          height: 6px;
-          background-color: #3b82f6;
-          border-radius: 50%;
-          margin-right: 0.5rem;
-          margin-top: 0.5rem;
-          flex-shrink: 0;
-        }
-
-        .project-technologies {
-          margin-bottom: 1rem;
-        }
-
-        .project-tech-title {
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #1f2937;
-        }
-
-        .project-tech-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .project-tech-tag {
-          padding: 0.25rem 0.75rem;
-          background-color: #eff6ff;
-          color: #1e40af;
-          font-size: 0.875rem;
-          border-radius: 9999px;
-          border: 1px solid #bfdbfe;
-        }
-
-        .project-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #2563eb;
-          text-decoration: none;
-          transition: color 0.2s;
-          font-weight: 500;
-        }
-
-        .project-link:hover {
-          color: #1d4ed8;
-        }
-
-        /* Skills section */
-        .skills-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 2rem;
-        }
-
-        .skill-card {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          text-align: center;
-          transition: all 0.3s;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .skill-card:hover {
-          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
-          transform: translateY(-5px);
-          border-color: #3b82f6;
-        }
-
-        .skill-icon {
-          color: #3b82f6;
-          margin-bottom: 1rem;
-          display: flex;
-          justify-content: center;
-        }
-
-        .skill-title {
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #2563eb;
-        }
-
-        .skill-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .skill-item {
-          color: #4b5563;
-          margin-bottom: 0.5rem;
-        }
-
-        /* Certifications section */
-        .certifications-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 2rem;
-        }
-
-        .cert-card {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          transition: all 0.3s;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .cert-card:hover {
-          box-shadow: 0 8px 16px rgba(37, 99, 235, 0.15);
-          transform: translateY(-5px);
-          border-color: #3b82f6;
-        }
-
-        .cert-header {
-          display: flex;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-
-        .cert-icon {
-          color: #f59e0b;
-          margin-right: 0.75rem;
-        }
-
-        .cert-title {
-          font-size: 1.1rem;
-          font-weight: 600;
-          color: #2563eb;
-        }
-
-        .cert-detail {
-          color: #4b5563;
-          margin-bottom: 0.5rem;
-        }
-
-        .cert-achievement {
-          font-size: 0.9rem;
-          color: #6b7280;
-        }
-
-        /* Contact section */
-        .contact-content {
-          max-width: 600px;
-          margin: 0 auto;
-        }
-
-        .contact-card {
-          background-color: #ffffff;
-          border-radius: 0.5rem;
-          padding: 2rem;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .contact-description {
-          font-size: 1.1rem;
-          color: #4b5563;
-          margin-bottom: 2rem;
-          text-align: center;
-        }
-
-        .contact-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 1rem;
-        }
-
-        .contact-link {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.75rem;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          text-decoration: none;
-          color: white;
-          font-weight: 600;
-          transition: all 0.2s;
-        }
-
-        .contact-link:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .contact-email {
-          background-color: #2563eb;
-        }
-
-        .contact-email:hover {
-          background-color: #1d4ed8;
-        }
-
-        .contact-phone {
-          background-color: #10b981;
-        }
-
-        .contact-phone:hover {
-          background-color: #059669;
-        }
-
-        .contact-github {
-          background-color: #6b7280;
-        }
-
-        .contact-github:hover {
-          background-color: #4b5563;
-        }
-
-        /* Footer */
-        footer {
-          padding: 2rem 0;
-          background-color: #f9fafb;
-          border-top: 1px solid #e5e7eb;
-          text-align: center;
-          color: #6b7280;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .nav-desktop {
-            display: none;
-          }
-
-          .mobile-menu-toggle {
-            display: block;
-          }
-
-          .hero-title {
-            font-size: 2.5rem;
-          }
-
-          .hero-subtitle {
-            font-size: 1.2rem;
-          }
-
-          .section-title {
-            font-size: 2rem;
-          }
-
-          section {
-            padding: 4rem 0;
-          }
-
-          .projects-grid,
-          .skills-grid,
-          .certifications-grid,
-          .about-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .contact-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .hero-title {
-            font-size: 2rem;
-          }
-
-          .hero-subtitle {
-            font-size: 1rem;
-          }
-
-          .hero-description {
-            font-size: 1rem;
-          }
-
-          .container {
-            padding: 0 1rem;
-          }
-
-          .logo {
-            font-size: 1.2rem;
-          }
-        }
-      `}</style>
-
-      {/* Navigation */}
-      <nav>
-        <div className="nav-container">
-          <div className="logo">
-            {personalInfo.name}
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="nav-desktop">
+    <div className="site-shell">
+      <a className="skip-link" href="#main-content">
+        Lewati ke konten utama
+      </a>
+
+      <header className="topbar">
+        <div className="nav-wrap">
+          <button className="brand" onClick={() => scrollTo('home')} aria-label="Kembali ke beranda">
+            <span className="brand-mark brand-logo"><img src="/codenami-favicon.svg" alt="" /></span>
+            <span className="brand-name">Code<span>Nami</span></span>
+          </button>
+
+          <nav className="desktop-nav" aria-label="Navigasi utama">
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className={`nav-button ${activeSection === item.id ? 'active' : ''}`}
+                className={activeSection === item.id ? 'nav-link active' : 'nav-link'}
+                onClick={() => scrollTo(item.id)}
               >
                 {item.label}
               </button>
             ))}
-          </div>
+          </nav>
 
-          {/* Mobile Navigation Toggle */}
-          <button
-            className="mobile-menu-toggle"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X /> : <Menu />}
-          </button>
+          <div className="nav-actions">
+            <button
+              className="icon-button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label={theme === 'dark' ? 'Gunakan tema terang' : 'Gunakan tema gelap'}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <a className="nav-cta" href={`mailto:${personal.email}`}>
+              Mari terhubung <ArrowUpRight size={16} />
+            </a>
+            <button
+              className="menu-button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation"
+              aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
+            >
+              {menuOpen ? <X size={21} /> : <Menu size={21} />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
-        <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="mobile-menu-button"
-            >
+        <nav
+          id="mobile-navigation"
+          className={menuOpen ? 'mobile-nav open' : 'mobile-nav'}
+          aria-label="Navigasi seluler"
+        >
+          {navItems.map((item, index) => (
+            <button key={item.id} onClick={() => scrollTo(item.id)}>
+              <span>0{index + 1}</span>
               {item.label}
+              <ChevronRight size={18} />
             </button>
           ))}
-        </div>
-      </nav>
+        </nav>
+      </header>
 
-      {/* Hero Section */}
-      <section id="home">
-        <div className="hero-background"></div>
-        <div className="container">
-          <div className="hero">
-            <div className={`hero-content ${isVisible.home ? 'fade-in' : ''}`}>
-              <h1 className="hero-title">
-                {personalInfo.name}
-              </h1>
-              <p className="hero-subtitle">
-                {personalInfo.title}
-              </p>
-              <p className="hero-description">
-                {personalInfo.description}
-              </p>
-              <div className="hero-buttons">
-                <button
-                  onClick={() => scrollToSection('projects')}
-                  className="button-primary"
-                >
-                  <span>View Projects</span>
-                  <ChevronRight size={16} />
+      <main id="main-content">
+        <section id="home" className="hero-section">
+          <div className="ambient ambient-one" />
+          <div className="ambient ambient-two" />
+          <div className="container hero-grid">
+            <div className="hero-copy" data-reveal>
+              <div className="availability-pill">
+                <span className="status-dot" />
+                {personal.availability}
+              </div>
+              <p className="hero-owner">{personal.name} <span>aka {codenami.name}</span></p>
+              <p className="hero-overline">{personal.role}</p>
+              <h1>{personal.headline}</h1>
+              <p className="hero-summary">{personal.summary}</p>
+              <div className="hero-actions">
+                <button className="button button-primary" onClick={() => scrollTo('projects')}>
+                  Lihat karya pilihan <ArrowDown size={17} />
                 </button>
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className="button-secondary"
-                >
-                  Get In Touch
-                </button>
+                <a className="button button-quiet" href={personal.github} target="_blank" rel="noreferrer">
+                  <GithubIcon size={18} /> GitHub
+                </a>
+              </div>
+              <div className="hero-meta">
+                <span><MapPin size={15} /> {personal.location}</span>
+                <span><GraduationCap size={15} /> S1 Teknologi Informasi</span>
+              </div>
+            </div>
+
+            <div className="hero-visual" data-reveal>
+              <div className="orbit orbit-outer" />
+              <div className="orbit orbit-inner" />
+              <div className="profile-disc">
+                <img className="profile-logo" src="/codenami-favicon.svg" alt="Logo CodeNami" />
+              </div>
+              <div className="floating-card floating-code">
+                <Code2 size={18} />
+                <span>full_stack</span>
+                <strong>01</strong>
+              </div>
+              <div className="floating-card floating-ai">
+                <Sparkles size={18} />
+                <span>applied_ai</span>
+                <strong>02</strong>
+              </div>
+              <div className="floating-card floating-data">
+                <Database size={18} />
+                <span>data_systems</span>
+                <strong>03</strong>
+              </div>
+              <div className="visual-caption">
+                <span>Currently exploring</span>
+                <strong>Human-centered AI products</strong>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+          <button className="scroll-cue" onClick={() => scrollTo('about')} aria-label="Gulir ke bagian tentang">
+            <span>Scroll to explore</span>
+            <ArrowDown size={15} />
+          </button>
+        </section>
 
-      {/* About Section */}
-      <section id="about" className="section-alt">
-        <div className="container">
-          <div className={`about-content fade-in-section ${isVisible.about ? 'visible' : ''}`}>
-            <h2 className="section-title">About Me</h2>
-            <div className="about-text">
-              <p>{aboutMe.intro}</p>
-              <p>{aboutMe.experience}</p>
-              <p>{aboutMe.goals}</p>
-            </div>
-            <div className="about-grid">
-              <div className="about-card">
-                <h3 className="about-card-title">Education</h3>
+        <section id="about" className="section about-section">
+          <div className="container">
+            <SectionHeading
+              label="01 / Tentang"
+              title="Teknologi yang kuat dimulai dari masalah yang dipahami dengan baik."
+            />
+            <div className="about-layout">
+              <div className="about-statement" data-reveal>
+                <p className="large-copy">
+                  Saya menikmati proses bergerak dari <em>“mengapa ini penting?”</em> menuju produk yang benar-benar
+                  bisa disentuh, diuji, dan dikembangkan.
+                </p>
                 <p>
-                  <strong>{aboutMe.education.institution}</strong><br />
-                  {aboutMe.education.program}<br />
-                  Focus: {aboutMe.education.focus}
+                  Sejak 2023, saya mengerjakan spektrum proyek yang luas: aplikasi full-stack, platform relawan,
+                  computer vision di browser, RAG berbasis SOP, eksperimen machine learning, hingga monitoring sistem.
+                  Pengalaman itu membentuk cara kerja yang lintas disiplin tanpa kehilangan perhatian pada detail.
                 </p>
               </div>
-              <div className="about-card">
-                <h3 className="about-card-title">Career Goals</h3>
-                <p>
-                  {aboutMe.careerGoals.title}<br />
-                  Target: {aboutMe.careerGoals.certification}<br />
-                  Vision: {aboutMe.careerGoals.vision}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects">
-        <div className="container">
-          <h2 className="section-title">Projects</h2>
-          <div className={`projects-grid fade-in-section ${isVisible.projects ? 'visible' : ''}`}>
-            {projects.map((project, index) => (
-              <div key={index} className="project-card">
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-description">{project.description}</p>
-                
-                <div className="project-highlights">
-                  <h4 className="project-highlight-title">Key Highlights:</h4>
-                  <ul className="project-highlight-list">
-                    {project.highlights.map((highlight, i) => (
-                      <li key={i} className="project-highlight-item">
-                        <span className="project-highlight-dot"></span>
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="stats-panel" data-reveal>
+                {stats.map((stat) => (
+                  <div className="stat" key={stat.label}>
+                    <strong>{stat.value}</strong>
+                    <span>{stat.label}</span>
+                  </div>
+                ))}
+                <div className="principle-card">
+                  <Sparkles size={19} />
+                  <div>
+                    <span>Prinsip kerja</span>
+                    <strong>Jelas, relevan, dapat dipertanggungjawabkan.</strong>
+                  </div>
                 </div>
-                
-                <div className="project-technologies">
-                  <h4 className="project-tech-title">Technologies:</h4>
-                  <div className="project-tech-list">
-                    {project.technologies.map((tech, i) => (
-                      <span key={i} className="project-tech-tag">
-                        {tech}
+              </div>
+            </div>
+            <div className="language-bar" data-reveal>
+              <div className="language-title">
+                <MessageCircleMore size={18} />
+                <span>Bahasa</span>
+              </div>
+              {languages.map((language) => (
+                <div className="language-item" key={language.name}>
+                  <strong>{language.name}</strong>
+                  <span>{language.level}</span>
+                  <small>{language.evidence}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="codenami" className="section codenami-section">
+          <div className="container codenami-layout">
+            <div className="codenami-copy" data-reveal>
+              <p className="section-kicker"><span>02 / Personal brand</span></p>
+              <p className="codenami-label">{codenami.label} · {codenami.since}</p>
+              <h2>{codenami.headline}</h2>
+              <p>{codenami.description}</p>
+              <div className="codenami-services">
+                {codenami.services.map((service) => <span key={service}>{service}</span>)}
+              </div>
+              <a className="button button-primary" href={`mailto:${personal.email}?subject=Kolaborasi%20dengan%20CodeNami`}>
+                Bekerja dengan CodeNami <ArrowUpRight size={17} />
+              </a>
+            </div>
+            <div className="codenami-card" data-reveal>
+              <div className="codenami-codebar">
+                <span /><span /><span />
+                <code>identity.ts</code>
+              </div>
+              <div className="codenami-wordmark">
+                <small>const personalBrand =</small>
+                <strong>Code<span>Nami</span></strong>
+                <p>{'{ clarity + craft + code }'}</p>
+              </div>
+              <div className="codenami-metrics">
+                {codenami.metrics.map((metric) => (
+                  <div key={metric.label}>
+                    <strong>{metric.value}</strong>
+                    <span>{metric.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" className="section projects-section">
+          <div className="container">
+            <SectionHeading
+              label="03 / Karya pilihan"
+              title="Dari ide, menjadi sistem yang bekerja."
+              description="Pilihan proyek lintas product engineering, artificial intelligence, data, dan infrastructure."
+            />
+
+            <div className="project-toolbar" data-reveal>
+              <div className="filter-list" aria-label="Filter proyek">
+                {projectFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    className={projectFilter === filter ? 'filter-button active' : 'filter-button'}
+                    onClick={() => setProjectFilter(filter)}
+                    aria-pressed={projectFilter === filter}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+              <span className="project-count">{filteredProjects.length.toString().padStart(2, '0')} proyek</span>
+            </div>
+
+            <div className="projects-grid">
+              {filteredProjects.map((project, index) => {
+                const ProjectIcon = iconMap[project.icon] || Code2;
+                return (
+                  <article
+                    key={project.title}
+                    className={`project-card tone-${project.tone} ${project.featured ? 'featured' : ''}`}
+                    data-reveal
+                    style={{ '--card-index': index }}
+                  >
+                    <div className="project-topline">
+                      <span className="project-number">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="project-category">{project.category}</span>
+                    </div>
+                    <div className="project-icon"><ProjectIcon size={25} /></div>
+                    <p className="project-eyebrow">{project.eyebrow}</p>
+                    <h3>{project.title}</h3>
+                    <p className="project-description">{project.description}</p>
+                    <p className="project-impact"><span>Kontribusi</span>{project.impact}</p>
+                    <div className="tech-list">
+                      {project.technologies.map((technology) => (
+                        <span key={technology}>{technology}</span>
+                      ))}
+                    </div>
+                    <div className="project-links">
+                      {project.links.length > 0 ? (
+                        project.links.map((link) => (
+                          <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+                            {link.label} <ArrowUpRight size={15} />
+                          </a>
+                        ))
+                      ) : (
+                        <span className="no-public-link">Case study lokal</span>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            {projectFilter === 'Semua' && (
+              <div className="project-archive" data-reveal>
+                <div className="archive-heading">
+                  <div>
+                    <p className="section-kicker"><span>Project archive</span></p>
+                    <h3>Eksperimen lain yang membentuk perjalanan.</h3>
+                  </div>
+                  <span>{archiveProjects.length.toString().padStart(2, '0')} proyek lainnya</span>
+                </div>
+                <div className="archive-list">
+                  {archiveProjects.map((project, index) => (
+                    <article className="archive-item" key={project.title}>
+                      <span className="archive-index">{String(index + 1).padStart(2, '0')}</span>
+                      <div>
+                        <h4>{project.title}</h4>
+                        <p>{project.detail}</p>
+                      </div>
+                      <span className="archive-area">{project.area}</span>
+                      <span className="archive-year">{project.year}</span>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section id="expertise" className="section expertise-section">
+          <div className="container">
+            <SectionHeading
+              label="04 / Keahlian"
+              title="Satu cara berpikir, beberapa lapisan teknologi."
+              description="Bukan daftar progress bar—ini adalah area yang sudah saya gunakan untuk membangun dan mengirim proyek nyata."
+            />
+            <div className="capability-grid">
+              {capabilities.map((capability, index) => {
+                const CapabilityIcon = iconMap[capability.icon] || Code2;
+                return (
+                  <article className="capability-card" key={capability.title} data-reveal>
+                    <div className="capability-head">
+                      <span>0{index + 1}</span>
+                      <CapabilityIcon size={24} />
+                    </div>
+                    <h3>{capability.title}</h3>
+                    <p>{capability.description}</p>
+                    <div className="tool-list">
+                      {capability.tools.map((tool) => <span key={tool}>{tool}</span>)}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="journey" className="section journey-section">
+          <div className="container">
+            <SectionHeading
+              label="05 / Perjalanan"
+              title="Belajar di kelas, menguji lewat karya."
+            />
+            <div className="journey-layout">
+              <div className="experience-column" data-reveal>
+                <div className="column-title"><BriefcaseBusiness size={19} /> Pengalaman</div>
+                <div className="timeline">
+                  {experiences.map((experience) => (
+                    <article className="timeline-item" key={`${experience.role}-${experience.organization}`}>
+                      <span className="timeline-dot" />
+                      <p className="timeline-meta">{experience.meta}</p>
+                      <h3>{experience.role}</h3>
+                      <h4>{experience.organization}</h4>
+                      <p>{experience.description}</p>
+                    </article>
+                  ))}
+                </div>
+                <article className="education-card">
+                  <GraduationCap size={23} />
+                  <div>
+                    <span>Pendidikan</span>
+                    <h3>{education.program}</h3>
+                    <p>{education.institution}</p>
+                    <small>{education.detail}</small>
+                  </div>
+                </article>
+              </div>
+
+              <div className="achievement-column" data-reveal>
+                <div className="column-title"><Award size={19} /> Sertifikasi & pencapaian</div>
+                <div className="achievement-list">
+                  {achievements.map((achievement, index) => {
+                    const content = (
+                      <>
+                        <span className="achievement-index">0{index + 1}</span>
+                        <div>
+                          <span className="achievement-type">{achievement.type}</span>
+                          <h3>{achievement.title}</h3>
+                          <p>{achievement.issuer}</p>
+                          {achievement.credential && <small>ID: {achievement.credential}</small>}
+                        </div>
+                        <span className="achievement-year">{achievement.year}</span>
+                        {achievement.href && <ExternalLink className="achievement-link-icon" size={16} />}
+                      </>
+                    );
+
+                    return achievement.href ? (
+                      <a
+                        className="achievement-item"
+                        key={achievement.title}
+                        href={achievement.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Lihat ${achievement.title}`}
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <article className="achievement-item" key={achievement.title}>{content}</article>
+                    );
+                  })}
+                </div>
+                <div className="credential-cloud">
+                  <span className="credential-cloud-label">Kredensial lainnya</span>
+                  <div>
+                    {additionalCredentials.map((credential) => (
+                      <span key={credential.title}>
+                        <strong>{credential.title}</strong>
+                        {credential.issuer} · {credential.year}
                       </span>
                     ))}
                   </div>
                 </div>
-                
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link"
-                  >
-                    <GithubIcon size={16} />
-                    <span>View Code</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills" className="section-alt">
-        <div className="container">
-          <h2 className="section-title">Skills & Expertise</h2>
-          <div className={`skills-grid fade-in-section ${isVisible.skills ? 'visible' : ''}`}>
-            {skills.map((skillCategory, index) => {
-              const IconComponent = skillCategory.icon;
-              return (
-                <div key={index} className="skill-card">
-                  <div className="skill-icon">
-                    <IconComponent size={48} />
-                  </div>
-                  <h3 className="skill-title">{skillCategory.category}</h3>
-                  <ul className="skill-list">
-                    {skillCategory.items.map((skill, i) => (
-                      <li key={i} className="skill-item">{skill}</li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Certifications Section */}
-      <section id="certifications">
-        <div className="container">
-          <h2 className="section-title">Certifications & Achievements</h2>
-          <div className={`certifications-grid fade-in-section ${isVisible.certifications ? 'visible' : ''}`}>
-            {certifications.map((cert, index) => (
-              <div key={index} className="cert-card">
-                <div className="cert-header">
-                  <Award size={24} className="cert-icon" />
-                  <h3 className="cert-title">{cert.title}</h3>
-                </div>
-                <p className="cert-detail"><strong>Institution:</strong> {cert.institution}</p>
-                <p className="cert-detail"><strong>Date:</strong> {cert.date}</p>
-                <p className="cert-achievement">{cert.achievement}</p>
-
-                {cert.preview && (
-                  <a
-                    href={cert.preview}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="project-link"
-                    style={{ marginTop: '0.5rem', display: 'inline-flex' }}
-                  >
-                    <ExternalLink size={16} />
-                    <span>View Certificate</span>
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="section-alt">
-        <div className="container">
-          <h2 className="section-title">Get In Touch</h2>
-          <div className={`contact-content fade-in-section ${isVisible.contact ? 'visible' : ''}`}>
-            <div className="contact-card">
-              <p className="contact-description">
-                I'm always open to discussing new opportunities and collaborations.
-              </p>
-              <div className="contact-grid">
-                <a
-                  href={`mailto:${personalInfo.email}`}
-                  className="contact-link contact-email"
-                >
-                  <Mail size={20} />
-                  <span>Email</span>
-                </a>
-                <a
-                  href={`tel:${personalInfo.phone}`}
-                  className="contact-link contact-phone"
-                >
-                  <Phone size={20} />
-                  <span>Phone</span>
-                </a>
-                <a
-                  href={personalInfo.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-link contact-github"
-                >
-                  <GithubIcon size={20} />
-                  <span>GitHub</span>
-                </a>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Footer */}
+        <section id="contact" className="contact-section">
+          <div className="container contact-inner" data-reveal>
+            <p className="section-kicker"><span>06 / Kontak</span></p>
+            <h2>Punya masalah menarik untuk dipecahkan?</h2>
+            <p>
+              Saya senang berdiskusi tentang product engineering, web development, AI, atau kolaborasi yang punya
+              dampak nyata. Mari mulai dari sebuah percakapan.
+            </p>
+            <div className="contact-actions">
+              <a className="button button-light" href={`mailto:${personal.email}`}>
+                <Mail size={18} /> Kirim email <ArrowUpRight size={16} />
+              </a>
+              <button className="button button-outline-light" onClick={copyEmail}>
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+                {copied ? 'Email tersalin' : 'Salin alamat email'}
+              </button>
+            </div>
+            <div className="contact-details">
+              <a href={`mailto:${personal.email}`}>{personal.email}</a>
+              <a href={personal.github} target="_blank" rel="noreferrer"><GithubIcon size={17} /> github.com/Naminiges</a>
+              <a href={personal.linkedin} target="_blank" rel="noreferrer"><Linkedin size={17} /> LinkedIn</a>
+              <span><MapPin size={17} /> {personal.location}</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
       <footer>
-        <div className="container">
-          <p>© 2025 {personalInfo.name}. Built with React.</p>
+        <div className="container footer-inner">
+          <div>
+            <span className="brand-mark brand-logo small"><img src="/codenami-favicon.svg" alt="" /></span>
+            <p><strong>CodeNami</strong> · Dirancang dan dibangun oleh {personal.name}.</p>
+          </div>
+          <p>© {new Date().getFullYear()} · React + Vite</p>
+          <button onClick={() => scrollTo('home')}>Kembali ke atas <ArrowUpRight size={15} /></button>
         </div>
       </footer>
     </div>
   );
-};
+}
 
 export default Portfolio;
